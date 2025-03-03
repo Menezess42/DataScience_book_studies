@@ -17,6 +17,7 @@
 				name = "day-planner-env";
 				buildInputs = with pkgs; [
                 python311
+                # IDE Like Features
                 pyright
                 python311Packages.pip
                 python311Packages.jedi
@@ -28,6 +29,8 @@
                 python311Packages.virtualenv
                 python311Packages.pyflakes  # Linter Pyflakes
                 python311Packages.isort
+                # Libs for the book
+                python311Packages.matplotlib
 				];                
 				shellHook = ''                                                           
 					echo "Welcome to the Day Planner and Investment Tracker environment!"                    
