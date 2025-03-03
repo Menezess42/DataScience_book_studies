@@ -7,6 +7,13 @@ gdp = [300.2, 543.3, 1075.9, 2862.5, 5979.6, 10289.7, 14958.3]
 movies  = ['Annie Hall', 'Ben-Hur', 'Casablanca', 'Grandhi', 'West side Story']
 num_oscars = [5,11,3,8,10]
 grades = [83, 95, 91, 87, 70, 0, 85, 82, 100, 67, 73, 77, 0]
+variance = [1,2,4,8,16,32,64,128,256]
+bias_squared = [256, 128, 64, 32, 16, 8, 4, 2, 1]
+total_error = [x+y for x,y in zip(variance, bias_squared)]
+xs = [i for i, _ in enumerate(variance)]
+friends = [70,65,72, 63, 71, 64, 60, 64, 67]
+minutes = [175, 170, 205, 120, 220, 130, 105, 145, 190]
+labels = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
 
 
 class SimpleGraph:
@@ -73,10 +80,50 @@ class BarGraph:
         plt.show()
 
 class LineGraph:
-    pass
+    '''Line graph is a good option to show trend'''
+    def call(self):
+        # We can make multiple layers to plt.plot
+        plt.plot(xs, variance, 'g-', label='variance') # linha verde sólida
+        plt.plot(xs, bias_squared, 'r-.', label='bias^2') # linha vermelha de ponto tracejado
+        plt.plot(xs, total_error, 'b:', label='total error') # linha pontilhada azul
+
+        # Because we apply labels to every series,
+        # we can create a subtitle for free (loc=9 means 'top center')
+
+        plt.legend(loc=9)
+        plt.xlabel('Model Complexity')
+        plt.xticks([])
+        plt.title('The bias-variance tradeoff')
+        plt.savefig('./simple_line_graph_show_bvariance_tradeoff.png')
+        plt.show()
+
+class ScatterGraph:
+    '''Scatter plot is the correct option to display the relationship between dataset pairs'''
+
+    def call(self):
+        plt.scatter(friends, minutes)
+
+        # Label witch plan
+        for label, friend_count, minute_cont in zip(labels, friends, minutes):
+            plt.annotate(label,
+                         xy=(friend_count, minute_cont),  # Put the label in the respective point
+                         xytext=(5,-5), # a little bit deslocate
+                         textcoords='offset points')
+        plt.title('Daily Minutes vs. Number of Friends')
+        plt.xlabel('# of friends')
+        plt.ylabel("Daily minutes spent on the site")
+        plt.savefig('line_scatteer graph')
+        plt.show()
+
+    # If you let the matplotlib select the scale when scatter variables, maybe you have an 
+    # incorrect or no so acurated positon plot
 
 if __name__ == '__main__':
     simple_graph = SimpleGraph()
     bar_graph = BarGraph()
-    #bar_graph.simple_call()
-    bar_graph.histograms_plot()
+    # bar_graph.simple_call()
+    # bar_graph.histograms_plot()
+    line_graph = LineGraph()
+    # line_graph.call()
+    scatter_graph = ScatterGraph()
+    scatter_graph.call()
