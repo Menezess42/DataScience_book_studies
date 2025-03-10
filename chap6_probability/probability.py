@@ -40,6 +40,22 @@ class Conditional_Probability:
         print(f"P(both | older): {both_girls/older_girl}")
         print(f"P(both | either): {both_girls/either_girl}")
 
+class Continuous_distributions:
+    '''
+    pdf
+    cdf
+    '''
+    def uniform_pdf(self,x: float)-> float:
+        return 1 if 0 <=x<1 else 0
+
+    def uniform_cdf(self, x: float) -> float:
+        '''
+        Returns the probability of a given uniform random variable be <=x
+        '''
+        if x<0: return 0
+        elif x<1: return x
+        else: return 1
+
 if __name__=='__main__':
     cp = Conditional_Probability()
     cp.two_Kids_problem()
