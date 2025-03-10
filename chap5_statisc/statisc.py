@@ -1,14 +1,17 @@
 from collections import Counter
 import matplotlib.pyplot as plt
 from typing import List, Tuple, Callable
+import math
 import sys
 import os
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from chap4_linear_algebra.linear_algebra import Vectors
 
 num_friends = [100,49,41,40,25,21,21,19,19,18,18,16,15,15,15,15,14,14,13,13,13,13,12,12,11,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,8,8,8,8,8,8,8,8,8,8,8,8,8,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+
+num_friends = list(map(float, num_friends)) # => [1,2,3]
+daily_minutes = [1,68.77,51.25,52.08,38.36,44.54,57.13,51.4,41.42,31.22,34.76,54.01,38.79,47.59,49.1,27.66,41.03,36.73,48.65,28.12,46.62,35.57,32.98,35,26.07,23.77,39.73,40.57,31.65,31.21,36.32,20.45,21.93,26.02,27.34,23.49,46.94,30.5,33.8,24.23,21.4,27.94,32.24,40.57,25.07,19.42,22.39,18.42,46.96,23.72,26.41,26.97,36.76,40.32,35.02,29.47,30.2,31,38.11,38.18,36.31,21.03,30.86,36.07,28.66,29.08,37.28,15.28,24.17,22.31,30.17,25.53,19.85,35.37,44.6,17.23,13.47,26.33,35.02,32.09,24.81,19.33,28.77,24.26,31.98,25.73,24.86,16.28,34.51,15.23,39.72,40.8,26.06,35.76,34.76,16.13,44.04,18.03,19.65,32.62,35.59,39.43,14.18,35.24,40.13,41.82,35.45,36.07,43.67,24.61,20.9,21.9,18.79,27.61,27.21,26.61,29.77,20.59,27.53,13.82,33.2,25,33.1,36.65,18.63,14.87,22.2,36.81,25.53,24.62,26.25,18.21,28.08,19.42,29.79,32.8,35.99,28.32,27.79,35.88,29.06,36.28,14.1,36.63,37.49,26.9,18.58,38.48,24.48,18.95,33.55,14.24,29.04,32.51,25.63,22.22,19,32.73,15.16,13.9,27.2,32.01,29.27,33,13.74,20.42,27.32,18.23,35.35,28.48,9.08,24.62,20.12,35.26,19.92,31.02,16.49,12.16,30.7,31.22,34.65,13.13,27.51,33.2,31.57,14.1,33.42,17.44,10.12,24.42,9.82,23.39,30.93,15.03,21.67,31.09,33.29,22.61,26.89,23.48,8.38,27.81,32.35,23.84]
 
 class Statisc:
     '''
@@ -26,7 +29,7 @@ class Statisc:
         '''
         friends_counts = Counter(self.num_friends)
         xs = range(101) # the greatest value is 100
-        ys = [friends_counts[x] for x in xs] # The hight indicates the number of friends
+        ys = [friends_counts[x] for x in xs] # The high indicates the number of friends
         plt.bar(xs,ys)
         plt.axis([0,101,0,25]) # [0,101,0,25] is [xmin, xmax, ymin, ymax]
         plt.xlabel("# of friends")
@@ -143,7 +146,107 @@ class Dispersion:
     # > but we are dividing by n-1 (Bessel's correction) insted of n.
     # > In fact, in a largeer population sample, x_bar is just an estimate of the
     # > true mean, i.e. at mean (x_i - x_bar)², there is an underestimate of the
-    # > squared deviation from the mean of _xi, so we divide by n-1 instead of n.
+    # > squared deviation from the mean of x_i, so we divide by n-1 instead of n.
+
+    # Standard Deviation
+    def standard_deviation(self, xs: List[float])-> float:
+        '''
+        The standard-deviation is the square root of the variance
+        '''
+        return math.sqrt(self.variance(xs))
+    # The problem of outliers also strikes here and affects the amplitude.
+    # Using the same example of the mean, if the most popular user has 200 friends, 
+    # the standard deviation will be 14.89 -- more than 60% higher.
+
+
+    # A most eficient alternative computes the difference between the 75 and 25 
+    # percentile.
+    def interquartile_range(self, xs: List[float]) -> float:
+        '''
+        Returns the difference between the 75 and 25 percentile
+        '''
+        cs = Central_tendencies()
+        return cs.quantile(xs, 0.75) - cs.quantile(xs, 0.25)
+
+
+class Correlation:
+    '''
+    Show the correlation between two metrics
+    '''
+
+    # Covariance is a type of variance applied to tuples. If
+    # variance measures the deviation of a variable from its mean,
+    # Covariance measures the simultaneous variation between the variables
+    # in relation to their mean
+    def covariance(self, xs: List[float], ys: List[float]) -> float:
+        assert len(xs) == len(ys), 'xs and ys must have the same len'
+        v = Vectors()
+        d = Dispersion()
+        return v.dot(d.de_mean(xs), d.de_mean(ys))/(len(xs) - 1)
+        # > Remember that the dot product sums the product of corresponding elements.
+        # > When both X and y are above or below the mean, a positive value enters
+        # > the sum. But if X or y is above while the other is below the mean, a 
+        # > negative value enters the sum
+
+    # > So a high positive covariance indicates that X tends to
+    # > be high when Y is high. and lower when Y is lower.
+    # > A high negative covariance indicates the opposite -- that
+    # > X tends to be lower when Y is high and vice-versa.
+
+    # But this can be hard to interpret. For two reasons:
+    # 1. Its units are the product of the units of the inputs,
+    # which may be difficult to undrestand.
+    # 2. If each user had twice as many friends, the covariance would be
+    # twice as large. However, in practice, the variables would be just
+    # as interrelated as before. In other words, it is difficult to define a
+    # 'high' covariance.
+
+    # That's why it is more common to calculate the correlation, which dives
+    # the standard-deviation of the two variables
+    def correlation(self,xs: List[float], ys: List[float]) -> float:
+        '''
+        Measures the simultaneous variation of xs and ys
+        from their means
+        '''
+        d = Dispersion()
+        stdev_x = d.standard_deviation(xs)
+        stdev_y = d.standard_deviation(ys)
+        if stdev_x > 0 and stdev_y > 0:
+            return self.covariance(xs, ys) / stdev_x/stdev_y
+        else:
+            return 0 # If there is no variance the correlation will be 0
+        # > The correlation has no unit and always stays between 
+        # > -1 (perfect anticorrelation) and 1 (perfect Correlation).
+        # > The number 0.25 indicates a weak positive correlation
+
+    def outlier_demo(self, xs: List[float], ys: List[float]):
+        '''
+        The person with 100 friends (thats pends just one minute per day)
+        is an huge outlier and the correlation is sensitive to that.
+        What happens if we ignore that ?
+        '''
+        plt.plot(xs, ys, 'ro')
+        plt.title('Plot with outler')
+        plt.xlabel('# minuts per day')
+        plt.ylabel('# num of friends')
+        plt.show()
+        plt.savefig('./num_frinds_minutes_outlier_plot.png')
+        outlier = xs.index(100)
+        num_friends_good = [x for i, x in enumerate(xs) if i != outlier]
+        daily_minutes_good = [x for i, x in enumerate(ys) if i != outlier]
+        plt.plot(num_friends_good, daily_minutes_good, 'ro')
+        plt.title('Plot without outler')
+        plt.xlabel('# minuts per day')
+        plt.ylabel('# num of friends')
+        plt.show()
+        plt.savefig('./num_frinds_minutes_plot.png')
+        # daily_hours_good = [dm/60 for dm in daily_minutes_good]
+        assert 0.57 < self.correlation(num_friends_good, daily_minutes_good) < 0.58
+
+
+
+
+
 
 if __name__ == '__main__':
     s = Statisc()
@@ -167,6 +270,12 @@ if __name__ == '__main__':
     d = Dispersion()
     assert d.data_range(num_friends) == 99
     assert d.variance(num_friends) < 81.55
+    assert 9.02 < d.standard_deviation(num_friends) < 9.04
+    assert d.interquartile_range(num_friends) == 6
 
-
+    c = Correlation()
+    assert 22.42 < c.covariance(num_friends, daily_minutes) < 22.43
+    assert 22.42/60 < c.covariance(num_friends, daily_minutes) < 22.43
+    assert 0.24 < c.correlation(num_friends, daily_minutes) < 0.25
+    c.outlier_demo(num_friends, daily_minutes)
 
