@@ -120,7 +120,7 @@ class Normal_distribution:
         '''
         # If not the standard, compute the standard and resize
         if mu != 0 or sigma !=1:
-            return mu + sigma * self.inverse_normal_cdf(p, tolerance=tolerance)
+            return mu + sigma * self.inverse_normal_cdf(p, mu=0, sigma=1, tolerance=tolerance)
         low_z = -10.0 # normal_cdf(-10) it is (very close to) 0
         hi_z = 10.0 # normal_cdf(10) it is (very close to) 1
         while hi_z - low_z > tolerance:
