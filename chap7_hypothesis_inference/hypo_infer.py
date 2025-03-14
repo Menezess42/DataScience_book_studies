@@ -102,6 +102,44 @@ class Exemple:
         return lower_bound, upper_bound
 
 
+
+    # Calculating test power for two-tailed. That means upper and lower limits
+    # Like: | X |
+    def verify_twoTailed_test_power(self, prob, percent, mu, sigma):
+        '''
+        We also want to determine the power of the test, the probability
+        of not making a type 2 error, which happens when we fail to reject
+        a false H0.
+        (Knowing that p is not 0.5 does not provide much information about
+        the distribution of X)
+        So specific we want to verify what happen if p is 0.55; In this case
+        the coin will be slightly biased twoards heads.
+        '''
+        # Limits of 95% based in p = 0.55(prob)
+        lo, hi = self.normal_two_sided_bounds(prob, mu, sigma)
+
+        # Real mu and sigma based in p=0.55(prob)
+        mu_1, sigma_1 = self.normal_approximation_to_binomial(1000, percent)
+
+        # A type 2 error occurs when we fail to reject the null hypothesis,
+        # which occurs when X is still in the original range.
+        type_2_probability = self.normal_probability_between(lo, hi, mu_1, sigma_1)
+        power = 1- type_2_probability # 0.887
+        print(f"lo: {lo} hi: {hi}\nmu_1: {mu_1} sigma_1: {sigma_1}")
+        print(f"type 2 probability: {type_2_probability} power: {power}")
+
+
+    # Calculating test power for upper-tailed. 
+    # That means upper limits
+    # Like: X |
+    def verify_upperTailed_test_power(self, kargs):
+        pass
+
+
+
+
+
+
 if __name__ == '__main__':
     e = Exemple()
     mu_0, sigma_0 = e.normal_approximation_to_binomial(1000, 0.5)
@@ -119,3 +157,5 @@ if __name__ == '__main__':
     print(f"lower_bound: {lower_bound}\nupper_bound:  {upper_bound}")
     # The 0.95 indicates that we have only a probability of 5% that X is
     # outside this interval
+    e.verify_test_power(0.95, 0.55, mu_0, sigma_0)
+
