@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 import math
 import sys
 import os
@@ -172,6 +172,53 @@ class Exemple:
         # less than x
         return 2*self.normal_probability_below(x, mu, sigma)
 
+    # confidence interval
+    # Is a range of values where we believe the
+    # true population parameter (in this case, the true
+    # probability of getting heads) is located. It is
+    # calculated from a sample and has an associated
+    # confidence level (e.g. 95%)
+    # Therefore, the confidence interval does not
+    # prove H0, but it gives us a criterion to check
+    # whether or not we have enough evidence to reject
+    # it.
+    def confidence_interval(self, n, success, confiance=0.95):
+        '''
+        To find the confidence interval
+        we use tree simple steps:
+        1. Sampling Proportion (estimated mean)
+        2. estimated standard deviation of the sampling distribution
+        3. Determine the limits of the confidence interval
+        '''
+        # 1.
+        p_hat = success/n
+        mu = p_hat
+
+        # 2.
+        sigma = math.sqrt(p_hat * (1-p_hat)/n)
+
+        # 3.
+        lower, upper = self.normal_two_sided_bounds(confiance, mu, sigma)
+        return lower, upper
+
+    # P-HACKING
+    # P-hacking, it's running a statistical test so many
+    # times that at some point it becomes significant
+    # (a p-value that falls below 0.05)
+    def run_experiment(self) -> List[bool]:
+        '''
+        Flip a fair coin multiple times, True = Heads
+        False = tails
+        '''
+        return [random.random() < 0.5 for _ in range(1000)]
+    def reject_fairness(self, experiment: List[bool]) -> bool:
+        '''
+        P-hacking demonstration.
+        Using 5% significance levels
+        '''
+        num_heads = len([flip for flip in experiment if flip])
+        return num_heads < 469 or num_heads > 531
+
 
 
 
@@ -232,5 +279,19 @@ if __name__ == '__main__':
     # For 527 heads, the computation is:
     # upper_p_value(526.5, mu_0, sigma_0) # 0.047
     # here, we reject the null hypothesis.
+    
+    # Confidence Interval
+    lower, upper = e.confidence_interval(1000, 525)
+    print(f"Confidence Interval: {lower} <-> {upper}")
+
+    lower, upper = e.confidence_interval(1000, 540)
+    print(f"Confidence Interval: {lower} <-> {upper}")
 
 
+    # P-hacking, it's running a statistical test so many
+    # times that at some point it becomes significant
+    # (a p-value that falls below 0.05)
+    random.seed(0)
+    experiments = [e.run_experiment() for _ in range(1000)]
+    num_rejections = len([experiment for experiment in experiments if e.reject_fairness(experiment=experiment)])
+    print(num_rejections)
