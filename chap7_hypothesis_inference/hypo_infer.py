@@ -219,7 +219,34 @@ class Exemple:
         num_heads = len([flip for flip in experiment if flip])
         return num_heads < 469 or num_heads > 531
 
+    # A/B Testing
+    # Is a statisc way to compare two or more versions
+    # and not only see with version performs better, but
+    # to see if the the difference between A and B is
+    # statiscally differente
+    def estimated_parameters(self, N: int, n: int) -> Tupe[float, float]:
+        p = n/N
+        sigma = math.sqrt(p*(1-p)/N)
+        return p, sigma
 
+    def a_b_test_statistic(self, N_A: int, n_A: int, N_B: int, n_B: int) -> float:
+        p_A, sigma_A = self.estimated_parameters(N_A, n_A)
+        p_B, sigma_B = self.estimated_parameters(N_B, n_B)
+        return (p_B - p_A)/math.sqrt(sigma_A**2 + sigma_B**2)
+    # This value will be aproximate a standard normal
+
+    # Bayesian Infererence
+    def B(self, alpha: float, beta: float) -> float:
+        '''
+        A normalizing constant for which the total probability
+        is 1
+        '''
+        return math.gamma(alpha) * math.gamma(beta) / math.gama(alpha+beta)
+
+    def beta_pdf(self, x: float, alpha: float, beta: float) -> float:
+        if x <= 0 or x >= 1:
+            return 0
+        return x ** (alpha-1) * (1-x)**(beta-1)/self.B(alpha, beta)
 
 
 if __name__ == '__main__':
@@ -295,3 +322,26 @@ if __name__ == '__main__':
     experiments = [e.run_experiment() for _ in range(1000)]
     num_rejections = len([experiment for experiment in experiments if e.reject_fairness(experiment=experiment)])
     print(num_rejections)
+    # A/B Testing - Exemple
+    # H0 - A and B are equal
+    # if A recives 200 cliks in 1000 visualization
+    # and B recives 180 in 1000 visualization, the statisc is:
+    z = e.a_b_test_statistic(1000, 200, 1000, 180)
+    print(f"z: {z}") # -1.14
+    # The probability of observe this greater difference it will
+    # be:
+    r = e.two_sided_p_value(z)
+    print(f"r: {r}") # 0.254
+    # This value will be so big that we can't define if has difference
+    # But if B recives 150 in a 1000 we have:
+    z = e.a_b_test_statistic(1000, 200,1000, 150)
+    print(f"z: {z}") # -2.94
+    r = e.two_sided_p_value(z) # 0.003
+    # This indicatsee that there is only a 0.003 chance of observing
+    # this large difference if the ads are equally effective
+    # A/B Testing Exemple - Conclusion
+    # The z-value and p-value indicate whether the difference between A and B
+    # is statiscally significant or not. In the first case (180 clicks), we
+    # were unable to prove that A is better. But in the second case(150 clicks)
+    # the statistics indicate that A performs significantly better than B.
+    
