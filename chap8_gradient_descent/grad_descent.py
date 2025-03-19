@@ -4,6 +4,7 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from chap4_linear_algebra.linear_algebra import Vector, Matrix, Vectors, Matrixs
+import matplotlib.pyplot as plt
 
 
 class GradientDescent:
@@ -52,10 +53,69 @@ class GradientDescent:
         return x*x
 
     # The derivation is:
-    def derivation(self, x: float) -> float:
+    def derivative(self, x: float) -> float:
         return 2*x
 
     # This is eazy to verify. Simply compute the quotient of the
     # differences and check the limit.
+    
+    # If you can't determine the gradient ?
+    # Although it is not possible to set limits in python,
+    # we can estimate derivatives by analyzing the quotient of the
+    # differences for a small value e.
 
+    def ploting_exemple(self):
+        xs = range(-10,11)
+        actuals = [self.derivative(x) for x in xs]
+        estimates = [self.difference_quotient(self.sqaure, x, h=0.001) for x in xs]
+
+        # plot to indicate that they are esssentialy the same
+        plt.title('Actual Derivatives vs. Estimates')
+        plt.plot(xs, actuals, 'rx', label='Actual') # red x
+        plt.plot(xs, estimates, 'b+', label='Estimate') # blue +
+        plt.legend(loc=9)
+        plt.savefig('Actual_derivatives_vs_Estimates.png')
+        plt.show()
+
+    # If F is a function with multiple variables. 
+    # Then it has multiple parcial derivatives.
+    # Each derivative indicates how F changes when we
+    # make little alterations in one of the input variables.
+    # To calculate the parcial derivative i, we to treate as
+    # a function of the variable i and considered all the other
+    # variables as fixed
+
+    def partial_difference_quotient(self,
+                                    f: Callable[[Vector], float],
+                                    v: Vector,
+                                    i: int,
+                                    h: float
+                                    ) -> float:
+        '''
+        Returns the parcial quotient of the differences i of f in v
+        '''
+        w = [v_j + (h if j==i else 0) # add h just to the i ement of v
+             for j, v_j in enumerate(v)]
+        return (f(w) - f(v))/h
+
+    # After the function above, we estimate the gradient like this
+    def estimate_gradient(self, f: Callable[[Vector], float],
+                          v: Vector,
+                          h: float = 0.0001):
+        return [self.partial_difference_quotient(f, v, i, h)
+                for i in range(len(v))]
+
+        # Note: The biggest disadvantage of this
+        # 'estimate with the difference quotient'
+        # approach is its high computational cost.
+        # If v has length n, estimate_gradient must
+        # evaluate f on 2n inputs. In this scheme,
+        # estimating a series of gradients is a lot of
+        # work.
+        # Therefore, we will always perform mathematical
+        # operations to calculate the gradient functions
+
+if __name__ == '__main__':
+    gd = GradientDescent()
+    gd.ploting_exemple()
 
