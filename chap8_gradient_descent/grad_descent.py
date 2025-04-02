@@ -5,6 +5,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from chap4_linear_algebra.linear_algebra import Vector, Matrix, Vectors, Matrixs
 import matplotlib.pyplot as plt
+import random
 
 
 class GradientDescent:
@@ -115,7 +116,84 @@ class GradientDescent:
         # Therefore, we will always perform mathematical
         # operations to calculate the gradient functions
 
+    # Using The Gradient
+    # We will use gradients to find the minimum between
+    # threedimensional vectors.
+    def gradient_step(self, v: Vector, gradient: Vector, step_size: float) -> Vector:
+        '''
+        Move 'step_size' in the direction of gradient from v
+        '''
+        assert len(v) == len(gradient), 'len of v has to be the same as len of gradient'
+        vecs = Vectors()
+        step = vecs.scalar_multiply(step_size, gradient)
+        return vecs.add(v, step)
+
+    def sum_of_sqaures_gradient(self, v: Vector) -> Vector:
+        return [2 * v_i for v_i in v]
+
+
+    # Using Descent Gradient to ajust models
+
+    # We'll use gradient descent to find the slope and intercept that minimize the
+    # mean sqared error. We start with a function that determines the gradient based
+    # on the erro of just one point:
+    # JUST ONE POINT
+    def linear_gradient(self, x: float, y: float, theta: Vector) -> Vector:
+        slope, intercept = theta
+        predicted = slope*x+intercept # The model predction.
+        error = (predicted - y) # the error is (predicted - real)
+        squared_error = error**2 # Let's minimize the square error
+        grad = [2*error*x, 2*error] # using it gradient.
+        return grad
+    # Let's analyze:
+    # Imagine that for X, the prediction is to high.
+    # In this case, the error is positive.
+    # The second variable is term of the gradient, 2*error,
+    # is positive, indicating that little alterations in the
+    # intercepto will increase the prediction (that is already big),
+    # that is, increasing alot the sqared error for THIS X
+    # The first term, 2*error*xx, has the same signal that x.
+    # So if X is positive, little increases in inclination
+    # will icrease the prediction and the error. But if X,
+    # is negative, little increases in inclination will
+    # decrease the prediction and the error.
+
+    
+
 if __name__ == '__main__':
     gd = GradientDescent()
-    gd.ploting_exemple()
+    # gd.ploting_exemple()
+
+    # Select a random start point
+    v = [random.uniform(-10, 10) for i in range(3)]
+    for epoch in range(1000):
+        grad = gd.sum_of_sqaures_gradient(v) # computes the gradient in v
+        v = gd.gradient_step(v, grad, -0.01) # take a negative step ffor the gradient
+        print(epoch, v)
+
+    vecs = Vectors()
+    assert vecs.distance(v, [0,0,0]) < 0.001 # should be close to zero
+    # print(vecs.distance(v, [0,0,0]))
+
+    # Using Descent Gradient to ajust models
+
+    # X goes from -50 through 49, y is always 20*x+5
+    inputs = [(x,20*x+5) for x in range(-50,50)]
+
+    # After many epochs (each pass through the dataset), we determine some things
+    # like the correct parameters.
+    theta = [random.uniform(-1, 1), random.uniform(-1,1)]
+    learning_rate = 0.001
+    for epoch in range(5000):
+        # computes gradients mean
+        v = Vectors()
+        grad = v.vector_mean([gd.linear_gradient(x, y, theta) for x, y in inputs])
+        # Gives one step in that direction
+        theta = gd.gradient_step(theta, grad, -learning_rate)
+        print(epoch, theta)
+    slope, intercept = theta
+    print(f"slope: {slope}")
+    print(f"intercept: {intercept}")
+    assert 19.9 < slope < 20.1, 'slope should be about 20'
+    assert 4.9 < intercept < 5.1, 'slope should be about 20'
 
