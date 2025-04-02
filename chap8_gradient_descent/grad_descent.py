@@ -6,6 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from chap4_linear_algebra.linear_algebra import Vector, Matrix, Vectors, Matrixs
 import matplotlib.pyplot as plt
 import random
+from typing import TypeVar, Iterator, List
 
 
 class GradientDescent:
@@ -158,7 +159,24 @@ class GradientDescent:
     # is negative, little increases in inclination will
     # decrease the prediction and the error.
 
+
+    # Minibatch and estocastic Gradient Descent
+    # minibatch = Amostra
+    # Extracted from the dataset
+    T = TypeVar('T') # this allows the insertion of generic functions
     
+    def minibatchs(self, dataset: List[T], 
+                   batch_size: int,
+                   shuffle: bool=True) -> Iterator[List[T]]:
+        '''
+        Creates minibatchs with batch_size from the dataset
+        '''
+        # iniciate the indices 0, batch_size, 2*batch_size, ....
+        batch_starts = [start for start in range(0, len(dataset), batch_size)]
+        if shuffle: random.shuffle(batch_starts) # randomic classify the batches
+        for start in batch_starts:
+            end = start+batch_size
+            yield dataset[start:end]
 
 if __name__ == '__main__':
     gd = GradientDescent()
@@ -196,4 +214,49 @@ if __name__ == '__main__':
     print(f"intercept: {intercept}")
     assert 19.9 < slope < 20.1, 'slope should be about 20'
     assert 4.9 < intercept < 5.1, 'slope should be about 20'
+
+    # Minibatch and estocastic Gradient Descent
+    # minibatch = Amostra
+    # Extracted from the dataset
+
+    # Now we can solve the quest again, but this time using minibatchs
+
+    theta = [random.uniform(-1, 1), random.uniform(-1,1)]
+    for epoch in range(1000):
+        for batch in gd.minibatchs(inputs, batch_size=20):
+            v = Vectors()
+            grad = v.vector_mean([gd.linear_gradient(x, y, theta) for x, y in batch])
+            theta = gd.gradient_step(theta, grad, -learning_rate)
+        # print(epoch, theta)
+
+    slope, intercept = theta
+    print(f"slope: {slope}")
+    print(f"intercept: {intercept}")
+    assert 19.9 < slope < 20.1, 'slope should be about 20'
+    assert 4.9 < intercept < 5.1, 'slope should be about 20'
+
+    # Stocastic Gradient
+    theta = [random.uniform(-1, 1), random.uniform(-1,1)]
+    for epoch in range(1000):
+        for x, y in inputs:
+            grad = gd.linear_gradient(x, y, theta)
+            theta = gd.gradient_step(theta, grad, -learning_rate)
+        print(epoch, theta)
+
+    slope, intercept = theta
+    print(f"slope: {slope}")
+    print(f"intercept: {intercept}")
+    assert 19.9 < slope < 20.1, 'slope should be about 20'
+    assert 4.9 < intercept < 5.1, 'slope should be about 20'
+
+
+
+
+
+
+
+
+
+
+
 
