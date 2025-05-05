@@ -178,7 +178,11 @@ class Center_limit:
         plt.savefig("./binomial_distribution_vs._Normal_Aproximation.png")
         plt.show()
 
-
+class a:
+    def __init__(self):
+        ...
+    def test(a,b):
+        return a+b
 
 if __name__=='__main__':
     cp = Conditional_Probability()
