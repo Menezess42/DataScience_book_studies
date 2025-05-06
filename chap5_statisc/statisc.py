@@ -173,7 +173,8 @@ class Correlation:
     '''
     Show the correlation between two metrics
     '''
-
+    def __init__(self):
+        print('ok')
     # Covariance is a type of variance applied to tuples. If
     # variance measures the deviation of a variable from its mean,
     # Covariance measures the simultaneous variation between the variables
