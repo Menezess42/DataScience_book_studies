@@ -44,7 +44,8 @@ def main():
 
     plot_histogram(uniform, 10, "Uniform Histogram")
     plot_histogram(normal, 10, "normal Histogram")
-
+    # In this case both have very different maximum and minimum points
+    # but define this is not sufficient to explain the different
 
 if __name__ == '__main__':
     main()
