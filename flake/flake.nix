@@ -1,51 +1,39 @@
-{inputs.essentials.url = "git+file:///mnt/hdmenezess42/GitProjects/flakeEssentials";
-
-    outputs = { self, nixpkgs, flake-utils, essentials }: 
-        flake-utils.lib.eachDefaultSystem (system:
-                {
-                devShell = essentials.devShells.${system}.python;
-                }
-                );
-}
-# {
-# 	description = "Day Planner and Investment Tracker";
+# {inputs.essentials.url = "git+file:///mnt/hdmenezess42/GitProjects/flakeEssentials";
 #
-# 	inputs = {
-# 		nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-# 		flake-utils.url = "github:numtide/flake-utils";
-# 	};
-#
-# 	outputs = { self, nixpkgs, flake-utils }:
-# 		flake-utils.lib.eachDefaultSystem (system:
-# 				let
-# 				pkgs = import nixpkgs { inherit system; };
-# #enableIDE = true;
-# #idePackages = if enableIDE then import ./ide-packages.nix {inherit pkgs; } else [];
-# 				in {
-# 				devShell = pkgs.mkShell {                                                                  
-# 				name = "day-planner-env";
-# 				buildInputs = with pkgs; [
-#                 python311
-#                 python311Packages.pip
-#                 # IDE Like Features
-#                 # pyright
-#                 # python311Packages.pip
-#                 # python311Packages.jedi
-#                 # python311Packages.jedi-language-server
-#                 # python311Packages.black
-#                 # python311Packages.flake8
-#                 # python311Packages.sentinel
-#                 # python311Packages.python-lsp-server
-#                 # python311Packages.virtualenv
-#                 # python311Packages.pyflakes  # Linter Pyflakes
-#                 # python311Packages.isort
-#                 # Libs for the book
-#                 python311Packages.matplotlib
-# 				];                
-# 				shellHook = ''                                                           
-# 					echo "Welcome to the Day Planner and Investment Tracker environment!"     pip install opencv-python               
-# 					'';                                                                                      
-# 				};                                                                                         
-# 				}
-# 				);
+#     outputs = { self, nixpkgs, flake-utils, essentials }: 
+#         flake-utils.lib.eachDefaultSystem (system:
+#                 {
+#                 devShell = essentials.devShells.${system}.python;
+#                 }
+#                 );
 # }
+#
+{
+  description = "Projeto que estende o ambiente Essentials";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    essentials.url = "git+file:///mnt/hdmenezess42/GitProjects/flakeEssentials";
+  };
+
+  outputs = { self, nixpkgs, flake-utils, essentials }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs { inherit system; };
+        baseShell = essentials.devShells.${system}.python;
+      in {
+        devShell = pkgs.mkShell {
+          name = "projeto-com-requests";
+
+          buildInputs = baseShell.buildInputs ++ (with pkgs.python311Packages; [
+          # opencv4
+          ]);
+
+          shellHook = ''
+            echo "Ambiente do projeto carregado (base Essentials + customizações)."
+            ${baseShell.shellHook or ""}
+          '';
+        };
+      });
+}
