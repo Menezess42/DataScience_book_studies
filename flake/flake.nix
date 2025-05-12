@@ -17,6 +17,7 @@
 				name = "day-planner-env";
 				buildInputs = with pkgs; [
                 python311
+                python311Packages.pip
                 # IDE Like Features
                 pyright
                 python311Packages.pip
@@ -33,7 +34,7 @@
                 python311Packages.matplotlib
 				];                
 				shellHook = ''                                                           
-					echo "Welcome to the Day Planner and Investment Tracker environment!"                    
+					echo "Welcome to the Day Planner and Investment Tracker environment!"     pip install opencv-python               
 					'';                                                                                      
 				};                                                                                         
 				}
