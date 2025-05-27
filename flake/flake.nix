@@ -10,13 +10,17 @@
   outputs = { self, nixpkgs, flake-utils, essentials }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        # Overlay local que desativa o checkPhase nos pacotes Python
+        # Overlay local que desativa completamente o checkPhase em pacotes Python
         pythonOverlay = final: prev: {
           python311 = prev.python311.override {
             packageOverrides = pyself: pysuper: {
               buildPythonPackage = args: pysuper.buildPythonPackage (args // {
                 doCheck = false;
-                checkPhase = "echo 'checkPhase desativado por flake.'";
+                checkInputs = [];
+                nativeCheckInputs = [];
+                checkPhase = ''
+                  echo "[checkPhase] Desativado por overlay do flake."
+                '';
               });
             };
           };
@@ -35,7 +39,7 @@
 
           buildInputs = baseShell.buildInputs ++ (with pkgs.python311Packages; [
             requests
-            # opencv4  # descomentável se necessário
+            # opencv4  # descomente se necessário
           ]);
 
           shellHook = ''
@@ -45,6 +49,7 @@
         };
       });
 }
+
 #
 # {
 #     description = "Projeto que estende o ambiente Essentials";
