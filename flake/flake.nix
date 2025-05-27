@@ -15,7 +15,6 @@
                 in {
                 devShell = pkgs.mkShell {
                 name = "projeto-com-requests";
-
                 buildInputs = baseShell.buildInputs ++ (with pkgs.python311Packages; [
 # opencv4
                 ]);
