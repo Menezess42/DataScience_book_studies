@@ -2,29 +2,30 @@
   description = "Projeto que estende o ambiente Essentials";
 
   inputs = {
-    nixpkgs.url       = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    flake-utils.url   = "github:numtide/flake-utils";
-    essentials.url    = "git+file:///mnt/hdmenezess42/GitProjects/flakeEssentials";
+    nixpkgs.url     = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    essentials.url  = "git+file:///mnt/hdmenezess42/GitProjects/flakeEssentials";
   };
 
   outputs = { self, nixpkgs, flake-utils, essentials }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        # Aqui eu passo `config.doCheck = false` para desativar todos os testes:
+        # Desativa TODOS os checkPhase (incluindo pytestCheckPhase)
         pkgs = import nixpkgs {
           inherit system;
-          config = {
-            doCheck = false;
-          };
+          config.doCheck = false;
         };
+
         baseShell = essentials.devShells.${system}.python;
       in {
         devShell = pkgs.mkShell {
           name = "projeto-com-requests";
 
-          buildInputs = baseShell.buildInputs ++ with pkgs.python311Packages; [
-            # opencv4
-          ];
+          # use parênteses aqui para o `with …; […]`
+          buildInputs = baseShell.buildInputs ++ (with pkgs.python311Packages; [
+            opencv4
+            # outros pacotes python, se precisar
+          ]);
 
           shellHook = ''
             echo "Ambiente do projeto carregado (base Essentials + customizações)."
