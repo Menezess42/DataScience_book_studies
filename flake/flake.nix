@@ -1,62 +1,40 @@
 {
-    description = "Projeto que estende o ambiente Essentials";
+  description = "Projeto que estende o ambiente Essentials";
 
-    inputs = {
-        nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-        flake-utils.url = "github:numtide/flake-utils";
-        essentials.url = "git+file:///mnt/hdmenezess42/GitProjects/flakeEssentials";
-    };
+  inputs = {
+    nixpkgs.url       = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url   = "github:numtide/flake-utils";
+    essentials.url    = "git+file:///mnt/hdmenezess42/GitProjects/flakeEssentials";
+  };
 
-    outputs = { self, nixpkgs, flake-utils, essentials }:
-        flake-utils.lib.eachDefaultSystem (system:
-                let
-# Overlay local que desativa o checkPhase nos pacotes Python
-                pythonOverlay = final: prev: {
-                python311 = prev.python311.override {
-                packageOverrides = pyself: pysuper: {
-                buildPythonPackage = args: pysuper.buildPythonPackage (args // {
-                        doCheck = false;
-                        checkPhase = "echo 'checkPhase desativado por flake.'";
-                        });
-                };
-                };
-                };
+  outputs = { self, nixpkgs, flake-utils, essentials }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        # Aqui eu passo `config.doCheck = false` para desativar todos os testes:
+        pkgs = import nixpkgs {
+          inherit system;
+          config = {
+            doCheck = false;
+          };
+        };
+        baseShell = essentials.devShells.${system}.python;
+      in {
+        devShell = pkgs.mkShell {
+          name = "projeto-com-requests";
 
-                pkgs = import nixpkgs {
-                inherit system;
-                overlays = [ 
-                (final: prev: {
-                 python311 = prev.python311.override {
-                 packageOverrides = pyself: pysuper: {
-                 buildPythonPackage = args: pysuper.buildPythonPackage (args // {
-                         doCheck = false;
-                         checkInputs = [];
-                         nativeCheckInputs = [];
-                         checkPhase = ''
-                         echo "[checkPhase] skipping tests (disable by overlay)."
-                         '';
-                         }); }; }; }) ];
-                };
+          buildInputs = baseShell.buildInputs ++ with pkgs.python311Packages; [
+            # opencv4
+          ];
 
-                baseShell = essentials.devShells.${system}.python;
-
-                in {
-                    devShell = pkgs.mkShell {
-                        name = "projeto-com-requests";
-
-                        buildInputs = baseShell.buildInputs ++ (with pkgs.python311Packages; [
-                                requests
-# opencv4  # descomentável se necessário
-                        ]);
-
-                        shellHook = ''
-                            echo "Ambiente do projeto carregado (base Essentials + customizações)."
-                            ${baseShell.shellHook or ""}
-                        '';
-                    };
-                });
+          shellHook = ''
+            echo "Ambiente do projeto carregado (base Essentials + customizações)."
+            ${baseShell.shellHook or ""}
+          '';
+        };
+      }
+    );
 }
-#
+
 # {
 #     description = "Projeto que estende o ambiente Essentials";
 #
