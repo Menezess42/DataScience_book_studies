@@ -18,10 +18,16 @@
 
                 buildInputs = baseShell.buildInputs ++ (with pkgs.python311Packages; [
 # opencv4
+                numpy
+                matplotlib
+                seaborn
                 ]);
 
-                shellHook = ''
+                postShellHook = ''
                 export NIX_BUILD_CORES=3
+                '';
+
+                shellHook = ''
                 echo "Ambiente do projeto carregado (base Essentials + customizações)."
                 ${baseShell.shellHook or ""}
                 '';
