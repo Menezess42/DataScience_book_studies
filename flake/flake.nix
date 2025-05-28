@@ -53,22 +53,37 @@
           name = "impurePythonEnv-flake";
           venvDir = ./.venv;
 
-          buildInputs = with pythonPkgs; [
-            # Python interpreter and venv support
-            python
-            venvShellHook
+          # buildInputs = with pythonPkgs; [
+          #   # Python interpreter and venv support
+          #   python
+          #   venvShellHook
+          #
+          #   # Nix-managed packages on PYTHONPATH
+          #   numpy
+          #   requests
+          #
+          #   # Native libs for binary extensions
+          #   taglib
+          #   openssl
+          #   libxml2
+          #   libxslt
+          #   libzip
+          #   zlib
+          #   git
+          # ];
 
-            # Nix-managed packages on PYTHONPATH
-            numpy
-            requests
-
-            # Native libs for binary extensions
-            openssl
-            libxml2
-            libxslt
-            libzip
-            zlib
-            git
+          buildInputs = [
+              pythonPkgs.python
+                  pythonPkgs.venvShellHook
+                  pythonPkgs.numpy
+                  pythonPkgs.requests
+                  pkgs.taglib
+                  pkgs.openssl
+                  pkgs.libxml2
+                  pkgs.libxslt
+                  pkgs.libzip
+                  pkgs.zlib
+                  pkgs.git
           ];
 
           # Install pip dependencies into the venv
