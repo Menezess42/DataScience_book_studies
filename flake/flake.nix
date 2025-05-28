@@ -10,7 +10,7 @@
     outputs = { self, nixpkgs, flake-utils, essentials }:
         flake-utils.lib.eachDefaultSystem (system:
                 let
-                pkgs = import nixpkgs { inherit system; };
+                pkgs = import nixpkgs { inherit system;  config.doCheck = false;};
                 baseShell = essentials.devShells.${system}.python;
                 in {
                 devShell = pkgs.mkShell {
