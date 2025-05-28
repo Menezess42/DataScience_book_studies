@@ -24,7 +24,6 @@
                 pythonPkgs.venvShellHook
                 pythonPkgs.numpy
                 pythonPkgs.requests
-                pythonPkgs.seaborn
                 pkgs.taglib
                 pkgs.openssl
                 pkgs.libxml2
@@ -35,14 +34,13 @@
                 ] ++ baseShell.buildInputs;
 
 # Install pip dependencies into the venv
-                    # pip install -r requirements.txt
                 postVenvCreation = ''
                     unset SOURCE_DATE_EPOCH
+                    pip install -r requirements.txt
                     '';
 
 # Allow pip install wheels
                 postShellHook = ''
-                    export NIX_BUILD_CORES=2
                     unset SOURCE_DATE_EPOCH
                     '';
                 };
