@@ -63,7 +63,6 @@
             requests
 
             # Native libs for binary extensions
-            taglib
             openssl
             libxml2
             libxslt
