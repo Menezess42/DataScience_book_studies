@@ -62,11 +62,6 @@
           postShellHook = ''
             unset SOURCE_DATE_EPOCH
           '';
-
-          shellHook = ''
-              echo "Ambiente do projeto carregado (base Essentials + customizações)."
-              ${baseShell.shellHook or ""}
-          '';
         };
       }
     );
