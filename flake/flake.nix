@@ -24,7 +24,6 @@
                 pythonPkgs.venvShellHook
                 pythonPkgs.numpy
                 pythonPkgs.requests
-                pythonPkgs.seaborn
                 pkgs.taglib
                 pkgs.openssl
                 pkgs.libxml2
