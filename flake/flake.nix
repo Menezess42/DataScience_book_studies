@@ -51,7 +51,7 @@
       in {
         devShell = pkgs.mkShell rec {
           name = "impurePythonEnv-flake";
-          venvDir = ./.venv;
+          venvDir = "./.venv";
 
           # buildInputs = with pythonPkgs; [
           #   # Python interpreter and venv support
