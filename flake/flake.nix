@@ -12,10 +12,8 @@
                 let
                 pkgs = import nixpkgs { inherit system; };
                 baseShell = essentials.devShells.${system}.python;
-                doCheck = false;
                 in {
                 devShell = pkgs.mkShell {
-                doCheck = false;
                 name = "projeto-com-requests";
                 buildInputs = baseShell.buildInputs ++ (with pkgs.python311Packages; [
 # opencv4
