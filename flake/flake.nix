@@ -35,13 +35,13 @@
 
 # Install pip dependencies into the venv
                 postVenvCreation = ''
-                    export NIX_BUILD_CORES=3
                     unset SOURCE_DATE_EPOCH
                     pip install -r requirements.txt
                     '';
 
 # Allow pip install wheels
                 postShellHook = ''
+                    export NIX_BUILD_CORES=3
                     unset SOURCE_DATE_EPOCH
                     '';
                 };
