@@ -42,6 +42,15 @@
 # Allow pip install wheels
                 postShellHook = ''
                     unset SOURCE_DATE_EPOCH
+
+                    HASH_FILE=".venv/.requirements_hash"
+                    NEW_HASH=$(sha256sum requirements.txt | cut -d ' ' -f 1)
+
+                    if [ ! -f $HASH_FILE ] || [ "$NEW_HASH" != "$(cat $HASH_FILE)" ]; then
+                        echo "Installing Python deps from requirements.txt..."
+                            pip install -r requirements.txt
+                            echo $NEW_HASH > $HASH_FILE
+                            fi
                     '';
                 };
                 }
