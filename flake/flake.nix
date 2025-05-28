@@ -34,8 +34,6 @@
 #                 };
 #                 });
 # } 
-
-
 {
   description = "Projeto Python com venv em flake";
 
@@ -58,7 +56,7 @@
           buildInputs = with pythonPkgs; [
             # Python interpreter and venv support
             python
-            pythonPackages.venvShellHook
+            venvShellHook
 
             # Nix-managed packages on PYTHONPATH
             numpy
