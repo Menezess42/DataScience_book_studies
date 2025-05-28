@@ -4,14 +4,12 @@
 #     inputs = {
 #         nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 #         flake-utils.url = "github:numtide/flake-utils";
-#         essentials.url = "git+file:///mnt/hdmenezess42/GitProjects/flakeEssentials";
 #     };
 #
 #     outputs = { self, nixpkgs, flake-utils, essentials }:
 #         flake-utils.lib.eachDefaultSystem (system:
 #                 let
 #                 pkgs = import nixpkgs { inherit system; };
-#                 baseShell = essentials.devShells.${system}.python;
 #                 in {
 #                 devShell = pkgs.mkShell {
 #                 name = "projeto-com-requests";
@@ -40,14 +38,16 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    essentials.url = "git+file:///mnt/hdmenezess42/GitProjects/flakeEssentials";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, essentials }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
         python = pkgs.python311;
         pythonPkgs = pkgs.python311Packages;
+        baseShell = essentials.devShells.${system}.python;
       in {
         devShell = pkgs.mkShell rec {
           name = "impurePythonEnv-flake";
@@ -72,7 +72,7 @@
           #   git
           # ];
 
-          buildInputs = [
+          buildInputs = baseShell.buildInputs ++ ([
               pythonPkgs.python
                   pythonPkgs.venvShellHook
                   pythonPkgs.numpy
@@ -84,7 +84,7 @@
                   pkgs.libzip
                   pkgs.zlib
                   pkgs.git
-          ];
+          ]);
 
           # Install pip dependencies into the venv
           postVenvCreation = ''
@@ -95,6 +95,11 @@
           # Allow pip install wheels
           postShellHook = ''
             unset SOURCE_DATE_EPOCH
+          '';
+
+          shellHook = ''
+              echo "Ambiente do projeto carregado (base Essentials + customizações)."
+              ${baseShell.shellHook or ""}
           '';
         };
       }
