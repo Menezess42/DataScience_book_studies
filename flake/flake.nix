@@ -18,13 +18,19 @@
                 buildInputs = baseShell.buildInputs ++ [ #(with pkgs.python311Packages; [
                 (pkgs.python311Packages.seaborn.overrideAttrs (old: {
                                                                doCheck = false;
+                                                               pytestCheckPhase="";
+                                                               checkPhase = "";
                                                                }))
                                                                
                 (pkgs.python311Packages.numpy.overrideAttrs (old: {
                                                                doCheck = false;
+                                                               pytestCheckPhase="";
+                                                               checkPhase = "";
                                                                }))
                 (pkgs.python311Packages.matplotlib.overrideAttrs (old: {
                                                                doCheck = false;
+                                                               pytestCheckPhase="";
+                                                               checkPhase = "";
                                                                }))
                 ];
 
