@@ -11,32 +11,13 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
-        python = pkgs.python311;
+        #python = pkgs.python311;
         pythonPkgs = pkgs.python311Packages;
         baseShell = essentials.devShells.${system}.python;
       in {
         devShell = pkgs.mkShell rec {
           name = "impurePythonEnv-flake";
           venvDir = "./.venv";
-
-          # buildInputs = with pythonPkgs; [
-          #   # Python interpreter and venv support
-          #   python
-          #   venvShellHook
-          #
-          #   # Nix-managed packages on PYTHONPATH
-          #   numpy
-          #   requests
-          #
-          #   # Native libs for binary extensions
-          #   taglib
-          #   openssl
-          #   libxml2
-          #   libxslt
-          #   libzip
-          #   zlib
-          #   git
-          # ];
 
           buildInputs =[
               pythonPkgs.python
