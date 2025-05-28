@@ -105,7 +105,6 @@
 #         };
 #       });
 # }
-
 {
   description = "Projeto que estende o ambiente Essentials e usa venv corretamente";
 
@@ -122,43 +121,40 @@
         python = pkgs.python311;
         baseShell = essentials.devShells.${system}.python;
       in {
-        # ⬇ É aqui que você expõe o seu dev-shell
+        # ⬅️ aqui
         devShells = {
-          # nome “default” para que `use flake` seja automático
-          "${system}" = {
-            default = pkgs.mkShell rec {
-              name    = "projeto-com-venv";
-              venvDir = ".venv";  # onde o hook vai criar o virtual-env
+          default = pkgs.mkShell rec {
+            name    = "projeto-com-venv";
+            venvDir = ".venv";  # onde o hook vai criar o virtual-env
 
-              buildInputs = [
-                # o Python “empacotado” com o hook de venv + numpy
-                (python.withPackages (ps: [ ps.venvShellHook ps.numpy ]))
-              ] ++ baseShell.buildInputs;
+            buildInputs = [
+              # o Python “empacotado” com o hook de venv + numpy
+              (python.withPackages (ps: [ ps.venvShellHook ps.numpy ]))
+            ] ++ baseShell.buildInputs;
 
-              nativeBuildInputs = with pkgs; [
-                openssl
-                zlib
-                libxml2
-                libxslt
-                libzip
-              ];
+            nativeBuildInputs = with pkgs; [
+              openssl
+              zlib
+              libxml2
+              libxslt
+              libzip
+            ];
 
-              # ⬇ este hook roda _depois_ do `python -m venv ./.venv && source ./.venv/bin/activate`
-              postVenvCreation = ''
-                echo "Criando e configurando o ambiente virtual…"
-                unset SOURCE_DATE_EPOCH
-                pip install --upgrade pip
-                pip install -r requirements.txt
-              '';
+            # roda _depois_ do `python -m venv .venv && source .venv/bin/activate`
+            postVenvCreation = ''
+              echo "Criando e configurando o ambiente virtual…"
+              unset SOURCE_DATE_EPOCH
+              pip install --upgrade pip
+              pip install -r requirements.txt
+            '';
 
-              # ⬇ este hook roda _após_ o postVenvCreation e antes de lhe dar o prompt
-              postShellHook = ''
-                echo "Ambiente (Essentials + venv Python) pronto."
-                ${baseShell.shellHook or ""}
-              '';
+            # roda _após_ o postVenvCreation, antes do prompt
+            postShellHook = ''
+              echo "Ambiente (Essentials + venv Python) pronto."
+              ${baseShell.shellHook or ""}
+            '';
 
-              # NÃO declare `shellHook` aqui: assim você preserva o hook interno do venvShellHook
-            };
+            # NÃO defina shellHook aqui, para não sobrescrever o hook do venvShellHook
           };
         };
       });
