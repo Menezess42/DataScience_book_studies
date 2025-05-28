@@ -106,33 +106,28 @@
 #       });
 # }
 
-
-
-
-
-
 {
   description = "Projeto que estende o ambiente Essentials e usa venv corretamente";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url     = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    essentials.url = "git+file:///mnt/hdmenezess42/GitProjects/flakeEssentials";
+    essentials.url  = "git+file:///mnt/hdmenezess42/GitProjects/flakeEssentials";
   };
 
   outputs = { self, nixpkgs, flake-utils, essentials }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs { inherit system; };
+        pkgs   = import nixpkgs { inherit system; };
         python = pkgs.python311;
-        pythonPkgs = pkgs.python311Packages;
         baseShell = essentials.devShells.${system}.python;
       in {
-        devShell = pkgs.mkShell {
-          name = "projeto-com-venv";
+        devShell = pkgs.mkShell rec {  # ← rec é essencial!
+          name    = "projeto-com-venv";
+          venvDir = ".venv";           # onde o hook criará o venv
 
           buildInputs = [
-            # Cria Python com o hook de venv ativado
+            # Python + hook de venv e numpy “por Nix”
             (python.withPackages (ps: [ ps.venvShellHook ps.numpy ]))
           ] ++ baseShell.buildInputs;
 
@@ -143,8 +138,6 @@
             libxslt
             libzip
           ];
-
-          venvDir = ".venv";
 
           postVenvCreation = ''
             echo "Criando e configurando o ambiente virtual..."
@@ -164,20 +157,3 @@
         };
       });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
