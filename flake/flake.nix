@@ -23,7 +23,7 @@
                 pythonPkgs.python
                 pythonPkgs.venvShellHook
                 pythonPkgs.numpy
-                pythonPkgs.requests
+                pythonPkgs.tqdm
                 pkgs.taglib
                 pkgs.openssl
                 pkgs.libxml2
