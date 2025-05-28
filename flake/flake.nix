@@ -1,37 +1,3 @@
-# {
-#     description = "Projeto que estende o ambiente Essentials";
-#
-#     inputs = {
-#         nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-#         flake-utils.url = "github:numtide/flake-utils";
-#     };
-#
-#     outputs = { self, nixpkgs, flake-utils, essentials }:
-#         flake-utils.lib.eachDefaultSystem (system:
-#                 let
-#                 pkgs = import nixpkgs { inherit system; };
-#                 in {
-#                 devShell = pkgs.mkShell {
-#                 name = "projeto-com-requests";
-#
-#                 buildInputs = baseShell.buildInputs ++ (with pkgs.python311Packages; [
-# # opencv4
-#                 numpy
-#                 matplotlib
-#                 seaborn
-#                 ]);
-#
-#                 postShellHook = ''
-#                 export NIX_BUILD_CORES=3
-#                 '';
-#
-#                 shellHook = ''
-#                 echo "Ambiente do projeto carregado (base Essentials + customizações)."
-#                 ${baseShell.shellHook or ""}
-#                 '';
-#                 };
-#                 });
-# } 
 {
   description = "Projeto Python com venv em flake";
 
@@ -72,7 +38,7 @@
           #   git
           # ];
 
-          buildInputs = baseShell.buildInputs ++ ([
+          buildInputs =[
               pythonPkgs.python
                   pythonPkgs.venvShellHook
                   pythonPkgs.numpy
@@ -84,7 +50,7 @@
                   pkgs.libzip
                   pkgs.zlib
                   pkgs.git
-          ]);
+          ] ++ baseShell.buildInputs;
 
           # Install pip dependencies into the venv
           postVenvCreation = ''
