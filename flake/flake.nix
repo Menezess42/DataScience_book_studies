@@ -4,7 +4,8 @@
     inputs = {
         nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
         flake-utils.url = "github:numtide/flake-utils";
-        essentials.url = "git+file:///mnt/hdmenezess42/GitProjects/flakeEssentials";
+        # essentials.url = "git+file:///mnt/hdmenezess42/GitProjects/flakeEssentials";
+        essentials.url = "path:/mnt/hdmenezess42/GitProjects/flakeEssentials";
     };
 
     outputs = { self, nixpkgs, flake-utils, essentials }:
@@ -24,6 +25,7 @@
                 pythonPkgs.venvShellHook
                 pythonPkgs.numpy
                 pythonPkgs.tqdm
+                pythonPkgs.requests
                 pkgs.taglib
                 pkgs.openssl
                 pkgs.libxml2
